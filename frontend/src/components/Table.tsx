@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import { Search,Plus,Trash } from "lucide-react";
 import Data from "../data.json";
 import "./Table.css";
-import AddButton from "./addButton";
+
 
 const Table = () => {
   const [searchText, setSearchText] = useState("");
@@ -64,7 +64,7 @@ const Table = () => {
             setSearchText(e.target.value);
           }}
         />
-        <AddButton onAdd={handleAdd}/>
+        
          </div>
          
       </div>

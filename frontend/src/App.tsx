@@ -1,10 +1,10 @@
 import './App.css'
 import Header from './components/Header';
 import { Route, Routes } from 'react-router';
-import Products from './components/pages/products';
-import AddProduct from './components/pages/products/addProducts';
-import Sales from './components/pages/sales';
-import AddSales from './components/pages/sales/addSales';
+import Products from '././pages/products';
+import AddProduct from '././pages/products/addProducts';
+import Sales from '././pages/sales';
+import AddSales from '././pages/sales/addSales';
 
 function App() {
   return (

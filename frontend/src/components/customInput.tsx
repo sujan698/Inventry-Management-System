@@ -9,6 +9,7 @@ interface CustomInputProps {
       <div className="item">
         <label htmlFor="name">{label}</label>
         <input
+        required
           name="name"
           type="text"
           placeholder={label}
