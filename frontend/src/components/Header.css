@@ -1,34 +1,44 @@
 .header-container {
   display: flex;
-  flex-direction: row;
-  height: 60px;
-  width: 100%;
-  background-color: white;
   justify-content: space-between;
   align-items: center;
-  /* position: fixed; */
+  padding: 10px 20px;
+  background-color: #f4f4f4;
 }
 
 .search-container {
   display: flex;
   align-items: center;
-  background-color: white;
-  margin-bottom: 16px;
-  padding: 8px 16px;
+
 }
 
-input {
-  border: none;
-  padding: 8px 8px;
-  width: 100%;
+.search-container input {
+  margin-left: 10px;
+  padding: 5px;
+}
+
+.user-section {
+  display: flex;
+  align-items: center;
+  gap: 15px;
 }
 
 .icon {
-  margin-right: 16px;
-}
-
-.icon, .search {
-  color: black;
   height: 16px;
   width: 16px;
+  cursor: pointer;
 }
+
+.header-button {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 5px 10px;
+  cursor: pointer;
+  border-radius: 5px;
+}
+
+.header-button:hover {
+  background-color: #2e7a31;
+}
+

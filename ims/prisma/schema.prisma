@@ -51,10 +51,10 @@ model User {
   createdAt      DateTime @default(now()) @map("created_at")
   updatedAt      DateTime @default(now()) @map("updated_at")
 
-  role         Role         @relation(fields: [roleId], references: [id])
+  role_id     Role         @relation(fields: [roleId], references: [id])
   organizations Organization @relation(fields: [organizationId], references: [id])
 
-  @@map("user")
+  @@map("users")
 }
 
 model Item {

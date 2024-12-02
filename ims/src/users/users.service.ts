@@ -1,4 +1,8 @@
-import { BadRequestException, Injectable, NotFoundException } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { PrismaService } from 'src/prisma/prisma.service';
@@ -9,31 +13,37 @@ import { hash } from 'bcrypt';
 
 @Injectable()
 export class UsersService {
-  
   constructor(private prismaService: PrismaService) {}
 
   async create(createUserDto: CreateUserDto) {
-    const roleService = new RolesService(this.prismaService);
     const organizationService = new OrganizationsService(this.prismaService);
-
-    await roleService.findOne(createUserDto.roleId);
     await organizationService.findOne(createUserDto.organizationId);
 
-    createUserDto.name = capatalizeFirstLetterOfEachWordInAphrase(
-      createUserDto.name,
-    );
-    if (await this.checkIfEmailExist(createUserDto.email)) {
+    const roleObj = await this.prismaService.role.findFirst({
+      where: { name: createUserDto.role },
+    });
+
+    if (!roleObj) {
+      throw new NotFoundException(
+        `Unable to find the role ${createUserDto.role}`,
+      );
+    }
+
+    const { role, ...rest } = createUserDto;
+
+    rest.name = capatalizeFirstLetterOfEachWordInAphrase(rest.name);
+    if (await this.checkIfEmailExist(rest.email)) {
       throw new BadRequestException('this email has already taken');
     }
-    if (await this.checkIfMobileExist(createUserDto.mobile)) {
+    if (await this.checkIfMobileExist(rest.mobile)) {
       throw new BadRequestException('this mobile number has already taken');
     }
 
-    createUserDto.password = await hash(createUserDto.password, 10);
+    rest.password = await hash(rest.password, 10);
 
-    return this.prismaService.user.create({ data: createUserDto });
+    return this.prismaService.user.create({ data: rest });
   }
-  
+
   findAll() {
     return this.prismaService.user.findMany();
   }
@@ -51,30 +61,42 @@ export class UsersService {
     await roleService.findOne(updateUserDto.roleId);
     await organizationService.findOne(updateUserDto.organizationId);
 
-    updateUserDto.name = capatalizeFirstLetterOfEachWordInAphrase(updateUserDto.name);
-    if(updateUserDto.name){
-      updateUserDto.name= capatalizeFirstLetterOfEachWordInAphrase(updateUserDto.name);
+    updateUserDto.name = capatalizeFirstLetterOfEachWordInAphrase(
+      updateUserDto.name,
+    );
+    if (updateUserDto.name) {
+      updateUserDto.name = capatalizeFirstLetterOfEachWordInAphrase(
+        updateUserDto.name,
+      );
     }
-    if(!await this.checkIfEmailExist(updateUserDto.email,id)){
-      throw new BadRequestException(`User ${updateUserDto.email}has alrready been taken`)
+    const { role, ...rest } = updateUserDto;
+    if (!(await this.checkIfEmailExist(updateUserDto.email, id))) {
+      throw new BadRequestException(
+        `User ${updateUserDto.email}has alrready been taken`,
+      );
     }
-    if(!await this.checkIfMobileExist(updateUserDto.mobile,id)){
-      throw new BadRequestException(`User${updateUserDto.mobile} has alrready been taken`)
+    if (!(await this.checkIfMobileExist(updateUserDto.mobile, id))) {
+      throw new BadRequestException(
+        `User${updateUserDto.mobile} has alrready been taken`,
+      );
     }
-    if(updateUserDto.password){
+    if (updateUserDto.password) {
       updateUserDto.password = await hash(updateUserDto.password, 10);
     }
-    return this.prismaService.user.update({where:{id},data:updateUserDto});
+    return this.prismaService.user.update({
+      where: { id },
+      data: rest,
+    });
   }
 
   async remove(id: number) {
     await this.getUserById(id);
-    return this.prismaService.user.deleteMany({where:{id}});
+    return this.prismaService.user.deleteMany({ where: { id } });
   }
-  private async getUserById(id:number){
-    const user = await this.prismaService.user.findFirst({where:{id}});
-    if(!user){
-      throw new NotFoundException(`User with ${id} does not exist`)
+  private async getUserById(id: number) {
+    const user = await this.prismaService.user.findFirst({ where: { id } });
+    if (!user) {
+      throw new NotFoundException(`User with ${id} does not exist`);
     }
     return user;
   }
@@ -103,14 +125,13 @@ export class UsersService {
     }
     return !!user;
   }
-  private async checkIfUserExist(name:string, id?:number):Promise<boolean>{
+  private async checkIfUserExist(name: string, id?: number): Promise<boolean> {
     const user = await this.prismaService.user.findFirst({
-     where :{ name,}
+      where: { name },
     });
     if (id) {
       return user ? user.id === id : true;
     }
     return !!user;
-
   }
 }

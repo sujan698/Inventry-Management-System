@@ -36,3 +36,22 @@
 .button-submit:active {
   background-color: #3e8e41;
 }
+.button-back {
+  display: flex;
+  width: 20%;
+  color: white;
+  padding: 12px 24px;
+  align-items: center;
+  background-color: #4caf50;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  margin-bottom: 20px;
+  transition: background-color 0.3s ease;
+}
+.radio-input{
+  display:flex;
+  gap: 8px;
+  flex-direction: row-reverse;
+  width: fit-content;
+}

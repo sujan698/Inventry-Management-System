@@ -8,9 +8,13 @@ import {
 } from 'class-validator';
 
 export class CreateUserDto {
-  @IsNotEmpty()
+  @IsOptional()
   @IsNumber()
   roleId: number;
+
+  @IsNotEmpty()
+  @IsString()
+  role: string;
 
   @IsNotEmpty()
   @IsNumber()
