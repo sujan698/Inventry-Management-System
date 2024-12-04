@@ -8,10 +8,10 @@ async function bootstrap() {
   // app instance is created here
   const app = await NestFactory.create(AppModule, { cors: true });
   // all middlewares are regitered here
-  app.useGlobalPipes(new ValidationPipe());
-  app.useGlobalGuards(new AuthGuard(new JwtService(), new Reflector()));
+  // app.useGlobalPipes(new ValidationPipe());
+  // app.useGlobalGuards(new AuthGuard(new JwtService(), new Reflector()));
 
   // application start
-  await app.listen(8000);
+  await app.listen(3000);
 }
 bootstrap();

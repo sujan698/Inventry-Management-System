@@ -28,6 +28,7 @@ export class UsersService {
         `Unable to find the role ${createUserDto.role}`,
       );
     }
+    createUserDto.roleId=roleObj.id;
 
     const { role, ...rest } = createUserDto;
 
@@ -60,7 +61,7 @@ export class UsersService {
 
     await roleService.findOne(updateUserDto.roleId);
     await organizationService.findOne(updateUserDto.organizationId);
-
+    const { role, ...rest } = updateUserDto;
     updateUserDto.name = capatalizeFirstLetterOfEachWordInAphrase(
       updateUserDto.name,
     );
@@ -69,7 +70,12 @@ export class UsersService {
         updateUserDto.name,
       );
     }
-    const { role, ...rest } = updateUserDto;
+    if (!(await this.checkIfUserExist(updateUserDto.name, id))) {
+      throw new BadRequestException(
+        `User ${updateUserDto.name}has alrready been taken`,
+      );
+    }
+ 
     if (!(await this.checkIfEmailExist(updateUserDto.email, id))) {
       throw new BadRequestException(
         `User ${updateUserDto.email}has alrready been taken`,

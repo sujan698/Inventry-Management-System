@@ -26,6 +26,7 @@ export class AuthService {
       },
       include:{
         role: true,
+        organizations:true,
       }
     });
     if (!user) {
