@@ -25,6 +25,7 @@ const Products = () => {
   const [productData, setProductData] = useState<ItemResponse[]>([]);
   const [filteredData, setFilteredData] = useState<ItemResponse[]>([]);
   const navigate = useNavigate();
+  
 
   const headerKeys = Object.keys(Data[0]);
 

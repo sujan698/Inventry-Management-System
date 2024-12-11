@@ -1,32 +1,51 @@
-import { Bell, Search, UserCircle } from "lucide-react";
 import { useNavigate } from "react-router";
 import "../../components/Header.css";
+import { useContext, useEffect, useState } from "react";
+import { UserContext } from "../../context/userContext";
 
 const Header = () => {
   const navigate = useNavigate();
+  const { user, fetchUser, clearUser } = useContext(UserContext);
+  const [hasUser, setHasUser] = useState(false);
+  // console.log(user);
+
+  // useEffect(() => {
+  //   if (user) {
+  //     fetchUser(user.id);
+  //   }
+  // }, [user, fetchUser]);
 
   const handleLoginNavigation = () => {
-    navigate("/login");
+    if (user) {
+      clearUser();
+      navigate("/");
+    } else {
+      navigate("/login");
+    }
   };
 
-  const handleSignupNavigation = () => {
-    navigate("/signup");
-  };
+  useEffect(() => {
+    if (user) {
+      console.log({ user });
+      setHasUser(true);
+    }
+  }, [user]);
 
   return (
     <div className="header-container">
-      <div className="search-container">
-        <Search width={16} height={16} className="icon search" />
-        <input placeholder="type here..." />
-      </div>
       <div className="user-section">
-        <button className="header-button" onClick={handleLoginNavigation}>Login</button>
-        <button className="header-button" onClick={handleSignupNavigation}>Signup</button>
-        <Bell
-
-          className="icon"
-        />
-        <UserCircle className="icon" />
+        {!hasUser ? (
+          <button className="header-button" onClick={handleLoginNavigation}>
+            Login
+          </button>
+        ) : (
+          <div className="welcome-message">
+            <span>Welcome, {user?.name}!</span>
+            {/* <button className="header-button" onClick={handleLoginNavigation}>
+              Logout
+            </button> */}
+          </div>
+        )}
       </div>
     </div>
   );

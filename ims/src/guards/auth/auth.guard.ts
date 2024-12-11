@@ -28,6 +28,7 @@ export class AuthGuard implements CanActivate {
       }
       const request = context.switchToHttp().getRequest();
       const [type, token] = request.headers.authorization?.split(' ') ?? [];
+    // return request.user ? true : false;
       //?.->optional chaining .this means when the authorization is not  
       //?? -> optional quelizing.this means  when there is two items when one is undefined/null
       // then only the next will be run

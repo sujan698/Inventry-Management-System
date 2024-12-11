@@ -1,50 +1,43 @@
 import { useState } from "react";
 import "../../components/SignUp.css";
-import axios from "axios";
+import { useLocation,useNavigate } from "react-router";
+import { api } from "../../api";
 
-const AUTH_TOKEN =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6Miwicm9sZUlkIjoxLCJvcmdhbml6YXRpb25JZCI6MiwibmFtZSI6IlJhbSBCaGF0dGFyYWkiLCJlbWFpbCI6InJhbWJoYXR0YXJhaTk4MjRAZ21haWwuY29tIiwibW9iaWxlIjoiOTg0MjczNzEyMCIsInBhc3N3b3JkIjoiJDJiJDEwJDA3YWZXVldJVnJhcVRNMjN5bUZMMC5qdGF3aDg0Sm1JSzdtVi9LRzFjVldPNDA4SFJYazUuIiwiY3JlYXRlZEF0IjoiMjAyNC0xMi0wMlQwODowODoxOC41MDNaIiwidXBkYXRlZEF0IjoiMjAyNC0xMi0wMlQwODowODoxOC41MDNaIiwicm9sZSI6eyJpZCI6MSwibmFtZSI6IlN1cGVyYWRtaW4ifSwiaWF0IjoxNzMzMTI2OTQyLCJleHAiOjE3MzQ0MjI5NDJ9.vEbZI4Hk6TfiZvrpspfHui1gpEz7FDVHgS-kjQejVRM";
-
-  interface SignupResponse {
-    username: string;
-    email: string;
-    id: number;
-  }
-const Signup = () => {
-  const [username, setUserName] = useState("");
+const SignUp = () => {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [phone,setPhone]=useState("");
-  const [signupResponse, setSignupResponse] = useState<SignupResponse |null> (null);
+  const [mobile, setMobile] = useState("");
+  const { state } = useLocation();
+  const organizationId = state?.organizationId;
+  const navigate = useNavigate();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log("Submitting signup for:", { username, email,phone, password });
+    console.log("Submitting signup for:", { name, email, mobile, password });
+
 
     try {
-      const response = await axios.post(
-        "http://localhost:3000/auth/register",
-        {
-          username,
-          email,
-          phone,
-          password,
-
-        },
-        {
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${AUTH_TOKEN}`,
-          },
-        }
-      );
+      const response = await api.post("/auth/register", {
+        name,
+        email,
+        mobile,
+        password,
+        organizationId:organizationId && parseInt(organizationId,10),
+        role: "Admin",
+      });
 
       if (response.status === 201) {
         console.log("Signup successful:", response.data);
-        setSignupResponse(response.data);
+        navigate("/")
+        localStorage.setItem("token", response.data.token);
+    
       }
     } catch (error: any) {
-      console.error("Signup failed:", error.response ? error.response.data : error.message);
+      console.error(
+        "Signup failed:",
+        error.response ? error.response.data : error.message
+      );
     }
   };
 
@@ -58,8 +51,8 @@ const Signup = () => {
             type="text"
             id="username"
             placeholder="Enter your username"
-            value={username}
-            onChange={(e) => setUserName(e.target.value)}
+            value={name}
+            onChange={(e) => setName(e.target.value)}
           />
         </div>
         <div className="form-group">
@@ -78,8 +71,8 @@ const Signup = () => {
             type="phone"
             id="phone"
             placeholder="Enter your phone number"
-            value={phone}
-            onChange={(e) => setPhone(e.target.value)}
+            value={mobile}
+            onChange={(e) => setMobile(e.target.value)}
           />
         </div>
         <div className="form-group">
@@ -96,13 +89,8 @@ const Signup = () => {
           Signup
         </button>
       </form>
-      {signupResponse && (
-        <div className="signup-success">
-          <p>Signup Successful! Welcome, {signupResponse.username}.</p>
-        </div>
-      )}
     </div>
   );
 };
 
-export default Signup;
+export default SignUp;

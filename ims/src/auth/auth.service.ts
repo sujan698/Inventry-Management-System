@@ -41,11 +41,19 @@ export class AuthService {
       token,
     };
   }
-  async register (registerDto:RegisterDto){
-    const userService=new UsersService(this.prismaService);
-    const user =await userService.create(registerDto);
-     const token =await this.jwtService.signAsync(user);
-     return{token,}
+  async register(registerDto: RegisterDto) {
+    const userService = new UsersService(this.prismaService);
+    const user = await userService.create(registerDto);
+    const token = await this.jwtService.signAsync(user);
+    return {
+  token,
+     };
   }
+  async getProfile(userId: number) {
+    const user = await this.prismaService.user.findFirst({ where: { id: userId } });
 
+    if (!user) throw new NotFoundException();
+
+    return user;
+  }
 }
