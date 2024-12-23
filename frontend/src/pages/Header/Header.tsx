@@ -2,18 +2,13 @@ import { useNavigate } from "react-router";
 import "../../components/Header.css";
 import { useContext, useEffect, useState } from "react";
 import { UserContext } from "../../context/userContext";
+import { UserCircle } from "lucide-react";
 
 const Header = () => {
   const navigate = useNavigate();
   const { user, fetchUser, clearUser } = useContext(UserContext);
   const [hasUser, setHasUser] = useState(false);
-  // console.log(user);
-
-  // useEffect(() => {
-  //   if (user) {
-  //     fetchUser(user.id);
-  //   }
-  // }, [user, fetchUser]);
+  const [isListVisible, setIsListVisible] = useState(false);
 
   const handleLoginNavigation = () => {
     if (user) {
@@ -22,6 +17,19 @@ const Header = () => {
     } else {
       navigate("/login");
     }
+  };
+
+  const toggleListVisibility = () => {
+    setIsListVisible((prevState) => !prevState);
+  };
+
+  const handleLogout = () => {
+    clearUser();
+    navigate("/login");
+  };
+
+  const handleProfileSettings = () => {
+    navigate("/profile-settings");
   };
 
   useEffect(() => {
@@ -39,11 +47,22 @@ const Header = () => {
             Login
           </button>
         ) : (
-          <div className="welcome-message">
-            <span>Welcome, {user?.name}!</span>
-            {/* <button className="header-button" onClick={handleLoginNavigation}>
-              Logout
-            </button> */}
+          <div className="welcome-section">
+            <div className="welcome-message">
+              <h3>Welcome, {user?.name}!</h3>
+            </div>
+            <div className="user-icon" onClick={toggleListVisibility}>
+              <UserCircle size={24} />
+            </div>
+
+            {isListVisible && (
+              <div className="user-options-list">
+                <ul>
+                  <li onClick={handleProfileSettings}>Profile Settings</li>
+                  <li onClick={handleLogout}>Logout</li>
+                </ul>
+              </div>
+            )}
           </div>
         )}
       </div>

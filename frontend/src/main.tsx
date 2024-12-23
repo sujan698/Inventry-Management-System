@@ -5,9 +5,12 @@ import App from "./App.tsx";
 import { BrowserRouter } from "react-router";
 import { AuthProvider } from "./context/authContext.tsx";
 import { UserProvider } from "./context/userContext.tsx";
+import { Provider } from "react-redux";
+import store from "./redux/store.ts";
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>
+    <Provider store={store}>
     <AuthProvider>
       <UserProvider>
         <BrowserRouter>
@@ -15,5 +18,6 @@ createRoot(document.getElementById("root")!).render(
         </BrowserRouter>
       </UserProvider>
     </AuthProvider>
+    </Provider>
   </StrictMode>
 );

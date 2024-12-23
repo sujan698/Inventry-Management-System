@@ -1,79 +1,79 @@
 import { useEffect, useState } from "react";
+import { api } from "../../api";
+import { useSelector, useDispatch } from "react-redux";
+import { addProducts, findOne } from "../../redux/slices/productSlice";
 import { Search } from "lucide-react";
-import Data from "../../data.json";
 import { useNavigate } from "react-router";
-import axios from "axios";
-const AUTH_TOKEN =
-  "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicm9sZUlkIjoxLCJvcmdhbml6YXRpb25JZCI6MiwibmFtZSI6IlN1amFuIEJoYXR0YXJhaSIsImVtYWlsIjoiYWNkZkBnbWFpbC5jb20iLCJtb2JpbGUiOiI5ODUyNDAxODc0NSIsInBhc3N3b3JkIjoiJDJiJDEwJGZlbW5RUGcuMXhRcEVtRjhjTW9sNk8xdTE0dHpybEhwNi5LQ1FmdktNRFRGb1pKMFRlZmlHIiwiY3JlYXRlZEF0IjoiMjAyNC0wOS0yNVQwOToyMzowNC45NjRaIiwidXBkYXRlZEF0IjoiMjAyNC0wOS0yNVQwOToyMzowNC45NjRaIiwicm9sZSI6eyJpZCI6MSwibmFtZSI6IlN1cGVyYWRtaW4ifSwiaWF0IjoxNzMyNjEwODUwLCJleHAiOjE3MzM5MDY4NTB9.V5sbX8qHpLoVSMvJBahZ1f57HzfyRa_fzZKeVyaf9yw";
 
-  interface Item{
-    id: number;
-    name: string;
-    description: string | null;
-    quantity:number;
-    price: number;
-    discount:number;
-    discountType:string;
+interface Item {
+  id: number;
+  name: string;
+  description: string | null;
+  quantity: number;
+  price: number;
+  discount: number;
+  discountType: string;
+}
 
+interface ItemResponse {
+  item: Item;
+}
 
-  }
-  interface ItemResponse{
-    item:Item;
-  }
 const Products = () => {
   const [searchText, setSearchText] = useState("");
-  const [productData, setProductData] = useState<ItemResponse[]>([]);
   const [filteredData, setFilteredData] = useState<ItemResponse[]>([]);
+  // const [productData, setProductData] = useState<ItemResponse[]>([]);
   const navigate = useNavigate();
-  
 
-  const headerKeys = Object.keys(Data[0]);
+  const dispatch = useDispatch();
+  const {data: products, item} = useSelector((state: any) => state.products);
+  console.log({ products });
+
 
   const filterByName = (name: string) => {
     // filter Data by name
-    const filteredData = productData?.filter(({ item }: ItemResponse) =>
-      item.name.toLowerCase().includes(name.toLowerCase())
+    const filteredData = products.filter(
+      ({ item }: ItemResponse) => item.name.toLowerCase() == name.toLowerCase()
     );
     setFilteredData(filteredData);
+    return filteredData;
   };
 
-  const fetchItems = async () => {
+  const fetchMockData = async () => {
     try {
-      const response =await axios({
+      const response = await api({
         method: 'get',
-        url: 'http://localhost:3000/items',
-        headers: {
-          Authorization: `Bearer ${AUTH_TOKEN}`
-          }
-      });
-      console.log({ response });
+        url: '/items',
+      })
       if (response.status === 200) {
-      setProductData(response.data);
+        dispatch(addProducts(response.data));
       }
     } catch (error) {
       console.error({ error });
     }
   };
-  
-
-
-  useEffect(() => {
-    fetchItems();
-  }, []);
 
   // filter data by name on search text change
   useEffect(() => {
+    fetchMockData();
     if (searchText !== "") {
       filterByName(searchText);
     } else {
-      setFilteredData(productData);
+      setFilteredData(products);
     }
   }, [searchText]);
 
-  const tableData = searchText ? filteredData : productData;
+  useEffect(() => {
+    if (products?.length > 0) {
+      dispatch(findOne({ id: 2 }));
+      console.log({ item });
+    }
+  }, [products]);
+
+  const tableData = products ?? [];
 
   return (
-    <div style={{ width: "50%", margin: "auto" }}>
+    <div>
       <h1>Products</h1>
       <div className="search-container">
         <Search width={16} height={16} className="icon search" />
@@ -83,11 +83,9 @@ const Products = () => {
             setSearchText(e.target.value);
           }}
         />
-        <button className=""
+        <button
           style={{ marginLeft: 16, padding: "4px 16px", width: "30%" }}
-          onClick={() => {
-            navigate("/products/add");
-          }}
+          onClick={() => navigate("/products/add")}
         >
           + Add New
         </button>
@@ -95,13 +93,17 @@ const Products = () => {
       <table>
         <thead>
           <tr>
-            {headerKeys.map((key) => (
-              <th key={key}>{key}</th>
-            ))}
+            <th>SN</th>
+            <th>Name</th>
+            <th>Description</th>
+            <th>Quantity</th>
+            <th>Price</th>
+            <th>Discount</th>
+            <th>Actions</th>
           </tr>
         </thead>
         <tbody>
-          {tableData.map(({ item }: ItemResponse) => (
+          {tableData?.map(({item}: ItemResponse) => (
             <tr key={item.id}>
               <td>{item.id}</td>
               <td>{item.name}</td>
@@ -109,6 +111,10 @@ const Products = () => {
               <td>{item.quantity}</td>
               <td>{item.price}</td>
               <td>{item.discount}</td>
+              <td style={{ display: "flex", flexDirection: "row", gap: 4 }}>
+                <p>Edit</p>
+                <p>Delete</p>
+              </td>
             </tr>
           ))}
         </tbody>
@@ -123,4 +129,3 @@ const Products = () => {
 };
 
 export default Products;
-

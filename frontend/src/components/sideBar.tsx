@@ -6,7 +6,7 @@ export default function SideBar() {
   return (
     <div className="sidebar" style={{ backgroundColor: "#1E201E", color: "white" }}>
       <div style={{ display: "flex", height: 80, alignItems: "center"}}>
-      <img src="/vite.svg" height={45} width="100%" />
+      <img src="/ims-1.svg" height={45} width="100%" />
       </div>
       <ul>
         <li>

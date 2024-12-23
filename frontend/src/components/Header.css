@@ -1,6 +1,8 @@
 .header-container {
   display: flex;
+  justify-content: space-between;
   flex-direction: row;
+  position: relative;
   height: 60px;
   width: 100%;
   background-color: white;
@@ -9,53 +11,52 @@
   /* position: fixed; */
 }
 
-.search-container {
-  display: flex;
-  align-items: center;
 
-}
 
-.search-container input {
-  margin-left: 10px;
-  padding: 5px;
-}
 
 .user-section {
   display: flex;
   align-items: center;
-  gap: 15px;
 }
 
-.icon {
-  height: 16px;
-  width: 16px;
+.welcome-section {
+  display: flex;
+  align-items: center;
+}
+
+.welcome-message h3 {
+  margin-right: 10px;
+}
+
+.user-icon {
+  cursor: pointer;
+  margin-left: 60em;
+}
+
+.user-options-list {
+  position: absolute;
+  top: 30px;
+  right: 0;
+  background-color: white;
+  border: 1px solid #ccc;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  width: 200px;
+  padding: 10px 0;
+  border-radius: 4px;
+}
+
+.user-options-list ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.user-options-list ul li {
+  padding: 10px;
+  text-align: left;
   cursor: pointer;
 }
 
-.header-button {
-  position: relative;
-  display: inline-block;
-  padding: 15px 30px;
-  text-align: center;
-  letter-spacing: 1px;
-  text-decoration: none;
-  background: transparent;
-  transition: ease-out 0.5s;
-  border: 2px solid;
-  border-radius: 10em;
-  box-shadow: inset 0 0 0 0 blue;
-  margin: 20px 0 10px 0;
-  color: rgb(88, 132, 154);
-  font-size: 15px;
-  font-weight: 500;
-  height: 50px;
-  width: 100%;
-  cursor: pointer;
+.user-options-list ul li:hover {
+  background-color: #f0f0f0;
 }
-
-.header-button:hover {
-  color: white;
-  box-shadow: inset 0 -100px 0 0 royalblue;
-}
-
-
