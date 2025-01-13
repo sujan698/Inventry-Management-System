@@ -10,18 +10,18 @@ interface AuthRequest extends Request {
   payload: User;
 }
 
-@Controller('auth')
+@Controller('/auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Public()
-  @Post("login")
+  @Post("/login")
   async login (@Body() loginDto:LoginDto){
     return this.authService.login(loginDto);
   }
 
   @Public()
-  @Post("register")
+  @Post("/register")
   async register (@Body() registerDto:RegisterDto){
     return this.authService.register(registerDto);
   }

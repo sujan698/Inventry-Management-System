@@ -30,7 +30,7 @@ export class AuthService {
       }
     });
     if (!user) {
-      throw new NotFoundException('Unavble to find the user');
+      throw new NotFoundException('Unable to find the user');
     }
     if (!(await compare(loginDto.password, user.password))) {
       throw new UnauthorizedException('Invalid credentials!');
@@ -47,7 +47,7 @@ export class AuthService {
     const token = await this.jwtService.signAsync(user);
     return {
   token,
-     };
+    };
   }
   async getProfile(userId: number) {
     const user = await this.prismaService.user.findFirst({ where: { id: userId } });
