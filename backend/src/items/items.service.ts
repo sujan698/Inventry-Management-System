@@ -2,7 +2,6 @@ import {
   ConflictException,
   Injectable,
   NotFoundException,
-
 } from '@nestjs/common';
 import { CreateItemDto } from './dto/create-item.dto';
 import { UpdateItemDto } from './dto/update-item.dto';
@@ -83,7 +82,6 @@ export class ItemsService {
     updateItemDto.name = capatalizeFirstLetterOfEachWordInAphrase(
       updateItemDto.name,
     );
-    
     return this.prismaService.item.update({
       where: { id },
       data: updateItemDto,
