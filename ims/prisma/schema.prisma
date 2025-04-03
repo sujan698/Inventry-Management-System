@@ -14,23 +14,23 @@ datasource db {
 }
 
 model Role {
-  id   Int    @id() @default(autoincrement())
-  name String @unique()
+  id    Int    @id() @default(autoincrement())
+  name  String @unique()
   users User[]
 
   @@map("roles")
 }
 
 model Organization {
-  id                Int                @id() @default(autoincrement())
-  name              String             @unique
-  type              OrganizationType   @default(retail)
-  address           String?
-  phone             String?            @db.VarChar(15)
-  createdAt         DateTime           @default(now()) @map("created_at")
-  updatedAt         DateTime           @default(now()) @map("updated_at")
-  user              User[]
-  item_organizations ItemOrganization[]
+  id        Int                @id() @default(autoincrement())
+  name      String             @unique
+  type      OrganizationType   @default(retail)
+  address   String?
+  phone     String?            @db.VarChar(15)
+  createdAt DateTime           @default(now()) @map("created_at")
+  updatedAt DateTime           @default(now()) @map("updated_at")
+  users     User[]
+  items     ItemOrganization[]
 
   @@map("organizations")
 }
@@ -51,59 +51,117 @@ model User {
   createdAt      DateTime @default(now()) @map("created_at")
   updatedAt      DateTime @default(now()) @map("updated_at")
 
-  role    Role         @relation(fields: [roleId], references: [id])
+  role          Role         @relation(fields: [roleId], references: [id])
   organizations Organization @relation(fields: [organizationId], references: [id])
 
   @@map("users")
 }
 
 model Item {
-  @@map("items")
-  id Int @id @default(autoincrement())
-  name String? @unique
-  description String? @db.Text()
-  quantity Int @default(0)
-  price Float @default(0)
-  discount Float @default(0)
+  id            Int          @id @default(autoincrement())
+  name          String?      @unique
+  description   String?      @db.Text()
+  quantity      Int          @default(0)
+  price         Float        @default(0)
+  discount      Float        @default(0)
   discount_type DiscountType @default(rate)
-  tax Float @default(0)
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  tax           Float        @default(0)
+  created_at    DateTime     @default(now())
+  updated_at    DateTime     @updatedAt
 
-  item_organizations ItemOrganization[]
+  organizations ItemOrganization[]
+  purchases     ItemPurchase[]
+  sales         ItemSale[]
+
+  @@map("items")
 }
 
 model ItemOrganization {
-  @@map("item_organizations")
 
-  itemId Int
+  itemId         Int
   organizationId Int
 
-  @@id([itemId, organizationId])
-
-  item Item @relation(fields: [itemId], references: [id], onDelete: Cascade)
+  item          Item         @relation(fields: [itemId], references: [id], onDelete: Cascade)
   organizations Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@id([itemId, organizationId])
+  @@map("item_organizations")
 }
 
-enum DiscountType{
+enum DiscountType {
   rate
   amount
 }
 
+model CustomerVendor {
+  id          Int        @id @default(autoincrement())
+  name        String
+  description String?
+  email       String?
+  phone       String?    @db.VarChar(15)
+  street      String?
+  city        String?
+  district    String?
+  province    String?
+  isVendor    Boolean    @default(false) @map("is_vendor")
+  createdAt   DateTime   @default(now()) @map("created_at")
+  updatedAt   DateTime   @default(now()) @updatedAt @map("updated_at")
+  sales       Sale[]
+  purchases   Purchase[]
 
-// model CustomerVendor {
-//   id          Int      @id @default(autoincrement())
-//   name        String
-//   description String?
-//   email       String?
-//   phone       String?  @db.VarChar(15)
-//   street      String?
-//   city        String?
-//   district    String?
-//   province    String?
-//   isVendor    Boolean  @default(false)
-//   createdAt   DateTime @default(now()) @map("created_at")
-//   updatedAt   DateTime @default(now()) @updatedAt @map("updated_at")
+  @@map("customer_vendors")
+}
 
-//   @@map("customer_vendors")
-// }
+model Sale {
+  id          Int            @id @default(autoincrement())
+  orderDate   DateTime       @map("order_date")
+  description String?
+  customerId  Int            @map("customer_id")
+  subTotal    Float          @default(0) @map("sub_total")
+  discount    Float          @default(0)
+  beforeTax   Float          @default(0) @map("before_tax")
+  taxAmount   Float          @default(0) @map("tax_amount")
+  createdAt   DateTime       @default(now()) @map("created_at")
+  updatedAt   DateTime       @default(now()) @updatedAt @map("updated_at")
+  customer    CustomerVendor @relation(fields: [customerId], references: [id])
+  items       ItemSale[]
+
+  @@map("sales")
+}
+
+model ItemSale {
+  saleId Int  @map("sale_id")
+  itemId Int  @map("item_id")
+  sale   Sale @relation(fields: [saleId], references: [id])
+  item   Item @relation(fields: [itemId], references: [id])
+
+  @@id([saleId, itemId])
+  @@map("item_sales")
+}
+
+model Purchase {
+  id          Int            @id @default(autoincrement())
+  orderDate   DateTime       @map("order_date")
+  description String?
+  vendorId    Int            @map("vendor_id")
+  subTotal    Float          @default(0) @map("sub_total")
+  discount    Float          @default(0)
+  beforeTax   Float          @default(0) @map("before_tax")
+  taxAmount   Float          @default(0) @map("tax_amount")
+  createdAt   DateTime       @default(now()) @map("created_at")
+  updatedAt   DateTime       @default(now()) @updatedAt @map("updated_at")
+  vendor      CustomerVendor @relation(fields: [vendorId], references: [id])
+  items       ItemPurchase[]
+
+  @@map("purchase")
+}
+
+model ItemPurchase {
+  purchaseId Int      @map("sale_id")
+  itemId     Int      @map("item_id")
+  purchase   Purchase @relation(fields: [purchaseId], references: [id])
+  item       Item     @relation(fields: [itemId], references: [id])
+
+  @@id([purchaseId, itemId])
+  @@map("item_purchase")
+}
